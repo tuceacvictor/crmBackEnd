@@ -1,43 +1,70 @@
 const db = require("../models");
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const config = require("../config/default");
 const User = db.user;
 const Op = db.Sequelize.Op;
 
+
+//login user
+exports.login = async (req, res) => {
+    const {login, password} = req.body;
+    let condition = login ? {login: {[Op.like]: `%${login}%`}} : null;
+    try {
+        const user = await User.findOne({where: condition});
+        if (!user) {
+            res.status(400).json({message: "Пользователь не существует!"});
+        }
+
+        const isMatchPasswords = bcrypt.compare(password, user.password);
+
+        if (isMatchPasswords) {
+            const token = jwt.sign({userId: user.id}, config.jwtSecret, {expiresIn: '1h'});
+            res.send({message: "ok", token: token});
+        }else{
+            res.status(400).json({message: "Не верный логин или пароль"})
+        }
+    } catch (e) {
+        res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})
+    }
+};
+
 // Create and Save a new User
-exports.create = (req, res) => {
-
+exports.create = async (req, res) => {
     //validate request
-    if (!req.body.login) {
-        res.status(400).send({
-            message: "Login can not be empty!"
-        });
-        return;
-    }
+    try {
+        if (!req.body.login) {
+            res.status(400).send({
+                message: "Login can not be empty!"
+            });
+            return;
+        }
+        console.log(req.body.password)
+        const hashedPassword = await bcrypt.hash(req.body.password, 8);
 
-    //create user
-    const user = {
-        login: req.body.login,
-        password: req.body.password,
-        email: req.body.email
-    }
-
-    //save user
-    User.create(user)
-        .then(data => {
-            res.send(data)
-        })
-        .catch(err => {
+        //create user
+        const user = {
+            login: req.body.login,
+            password: hashedPassword,
+            email: req.body.email
+        };
+        //save user
+        const userCreate = User.create(user);
+        res.send(userCreate)
+    } catch (err) {
+        console.log(err)
             res.status(500).send({
                 message:
                     err.message || "Some error occurred while creating the User."
             });
-        });
+    }
 };
 
 // Retrieve all Users from the database.
 exports.findAll = (req, res) => {
     const email = req.body.email;
-    var condition = email ? { email: { [Op.like]: `%${title}%` } } : null;
-    User.findAll({ where: condition })
+    var condition = email ? {email: {[Op.like]: `%${title}%`}} : null;
+    User.findAll({where: condition})
         .then(data => {
             res.send(data);
         })
@@ -69,7 +96,7 @@ exports.update = (req, res) => {
     const id = req.params.id;
 
     User.update(req.body, {
-        where: { id: id }
+        where: {id: id}
     })
         .then(num => {
             if (num == 1) {
@@ -93,7 +120,7 @@ exports.update = (req, res) => {
 exports.delete = (req, res) => {
     const id = req.params.id;
     User.destroy(
-        { where: { id: id } }
+        {where: {id: id}}
     )
         .then(num => {
             if (num == 1) {
@@ -120,7 +147,7 @@ exports.deleteAll = (req, res) => {
         truncate: false
     })
         .then(nums => {
-            res.send({ message: `${nums} Users were deleted successfully!` });
+            res.send({message: `${nums} Users were deleted successfully!`});
         })
         .catch(err => {
             res.status(500).send({
@@ -132,7 +159,7 @@ exports.deleteAll = (req, res) => {
 
 // Find all published users
 exports.findAllActive = (req, res) => {
-    User.findAll({ where: { active: true } })
+    User.findAll({where: {active: true}})
         .then(data => {
             res.send(data);
         })

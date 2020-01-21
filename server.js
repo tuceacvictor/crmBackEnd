@@ -1,14 +1,15 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-
 const app = express();
-
 var corsOptions = {
-    origin: "http://localhost:8081"
+    origin: "http://localhost:3000"
 };
 
+require("./app/config/passport")(app)
+
 app.use(cors(corsOptions));
+
 
 // parse requests of content-type - application/json
 app.use(bodyParser.json());
@@ -23,7 +24,6 @@ db.sequelize.sync();
 //     console.log("Drop and re-sync db.");
 //   });
 
-
 // simple route
 app.get("/", (req, res) => {
     res.json({ message: "test message" });
@@ -31,6 +31,7 @@ app.get("/", (req, res) => {
 
 
 require("./app/routes/user.routes")(app);
+require("./app/routes/customer.routes")(app);
 
 
 
