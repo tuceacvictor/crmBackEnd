@@ -6,7 +6,7 @@ const Customer = db.customer;
 exports.getCustomers = async (req, res) => {
   try {
       const customers = await Customer.findAll();
-      console.log(customers)
+      console.log(customers);
       res.send(customers)
 
   } catch (e) {
