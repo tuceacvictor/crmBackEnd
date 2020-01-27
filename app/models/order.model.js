@@ -1,37 +1,38 @@
 module.exports = (sequelize, Sequelize) => {
     const Order = sequelize.define("Order", {
         id: {
-            type: Sequelize.INT
+            type: Sequelize.INTEGER,
+            primaryKey: true
         },
         user_begin_id: {
-            type: Sequelize.INT
+            type: Sequelize.INTEGER
         },
         user_end_id: {
-            type: Sequelize.INT
+            type: Sequelize.INTEGER
         },
         date_begin: {
-            type: Sequelize.DATETIME
+            type: Sequelize.DATE
         },
         date_end:{
-            type: Sequelize.DATETIME
+            type: Sequelize.DATE
         },
         serial:{
-            type: Sequelize.VARCHAR
+            type: Sequelize.STRING
         },
         client_id:{
-            type: Sequelize.INT
+            type: Sequelize.INTEGER
         },
         model_id:{
-            type: Sequelize.INT
+            type: Sequelize.INTEGER
         },
         description:{
-            type: Sequelize.VARCHAR
+            type: Sequelize.STRING
         },
         master_id:{
-            type: Sequelize.INT
+            type: Sequelize.INTEGER
         },
         status:{
-            type: Sequelize.INT
+            type: Sequelize.INTEGER
         },
         cost:{
             type: Sequelize.DOUBLE
@@ -40,40 +41,40 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.FLOAT
         },
         sell:{
-            type: Sequelize.INT
+            type: Sequelize.INTEGER
         },
         office_id:{
-            type: Sequelize.INT
+            type: Sequelize.INTEGER
         },
         office_begin_id:{
-            type: Sequelize.INT
+            type: Sequelize.INTEGER
         },
         office_end_id:{
-            type: Sequelize.INT
+            type: Sequelize.INTEGER
         },
         replace_status:{
-            type: Sequelize.INT
+            type: Sequelize.INTEGER
         },
         replace_to:{
-            type: Sequelize.INT
+            type: Sequelize.INTEGER
         },
         callsms:{
-            type: Sequelize.INT
+            type: Sequelize.INTEGER
         },
         device_type_id:{
-            type: Sequelize.INT
+            type: Sequelize.INTEGER
         },
         device_brand_id:{
-            type: Sequelize.INT
+            type: Sequelize.INTEGER
         },
         device_name_id:{
-            type: Sequelize.INT
+            type: Sequelize.INTEGER
         },
         where_type:{
-            type: Sequelize.INT
+            type: Sequelize.INTEGER
         },
         called:{
-            type: Sequelize.INT
+            type: Sequelize.INTEGER
         },
         franchise:{
             type: Sequelize.FLOAT
