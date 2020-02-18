@@ -5,7 +5,7 @@ const Customer = db.customer;
 
 
 exports.getOrders = async (req, res) => {
-    Order.hasMany(Customer,{foreignKey: 'id'});
+    Order.hasMany(Customer, {foreignKey: 'id'});
     let _q = Order;
     try {
         const Order = await _q.findAll({
@@ -15,7 +15,7 @@ exports.getOrders = async (req, res) => {
                 [sequelize.col('customers.name'), 'name'],
                 [sequelize.col('customers.phone'), 'phone'],
             ],
-            group: ['client_id'],
+            group: ['customers.phone'],
 
         });
         res.send(Order)
