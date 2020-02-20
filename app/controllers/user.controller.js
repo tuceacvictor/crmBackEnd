@@ -13,15 +13,14 @@ exports.login = async (req, res) => {
     try {
         const user = await User.findOne({where: condition});
         if (!user) {
-            res.status(400).json({message: "Пользователь не существует!"});
+            res.status(400).json({message: "Не верный логин или пароль"});
         }
 
-        const isMatchPasswords = bcrypt.compare(password, user.password);
-
-        if (isMatchPasswords) {
+        const isMatchPasswords = await bcrypt.compare(password, user.password);
+        if (isMatchPasswords === true) {
             const token = jwt.sign({userId: user.id}, config.jwtSecret, {expiresIn: '1h'});
             res.send({message: "ok", token: token});
-        }else{
+        } else {
             res.status(400).json({message: "Не верный логин или пароль"})
         }
     } catch (e) {
@@ -53,10 +52,10 @@ exports.create = async (req, res) => {
         res.send(userCreate)
     } catch (err) {
         console.log(err)
-            res.status(500).send({
-                message:
-                    err.message || "Some error occurred while creating the User."
-            });
+        res.status(500).send({
+            message:
+                err.message || "Some error occurred while creating the User."
+        });
     }
 };
 
