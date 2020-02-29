@@ -19,7 +19,11 @@ exports.login = async (req, res) => {
         const isMatchPasswords = await bcrypt.compare(password, user.password);
         if (isMatchPasswords === true) {
             const token = jwt.sign({userId: user.id}, config.jwtSecret, {expiresIn: '1h'});
-            res.send({message: "ok", token: token});
+            res.send({
+                token: token,
+                user: {id: user.id, login: user.login, email: user.email, role: "admin"},
+                theme: {primaryColor: "", secondaryColor: "", type: ""}
+            });
         } else {
             res.status(400).json({message: "Не верный логин или пароль"})
         }
@@ -38,14 +42,13 @@ exports.create = async (req, res) => {
             });
             return;
         }
-        console.log(req.body.password)
         const hashedPassword = await bcrypt.hash(req.body.password, 8);
-
         //create user
         const user = {
             login: req.body.login,
             password: hashedPassword,
-            email: req.body.email
+            email: req.body.email,
+            role: req.body.role
         };
         //save user
         const userCreate = User.create(user);
@@ -59,11 +62,37 @@ exports.create = async (req, res) => {
     }
 };
 
+// Change password
+exports.changePassword = async (req, res) => {
+    const {login, password, newPassword} = req.body;
+    let condition = login ? {login: {[Op.like]: `%${login}%`}} : null;
+    try {
+        const user = await User.findOne({where: condition});
+        const isMatchPasswords = await bcrypt.compare(password, user.password);
+        if(isMatchPasswords){
+            //change password
+            const hashedPassword = await bcrypt.hash(newPassword, 8);
+            const updatedUser = {
+                login: login,
+                password: hashedPassword,
+                email: user.email,
+                role: user.role
+            };
+            res.status(200).json({message: 'Все окей , но пароль не изменен'})
+          //  User.create(updatedUser)
+        }else{
+            res.status(400).json({message: "Текущий пароль не верен"})
+        }
+    } catch (err) {
+        res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})
+    }
+};
+
 // Retrieve all Users from the database.
 exports.findAll = (req, res) => {
-    const email = req.body.email;
-    var condition = email ? {email: {[Op.like]: `%${title}%`}} : null;
-    User.findAll({where: condition})
+    //const email = req.body.email;
+    //let condition = email ? {email: {[Op.like]: `%${title}%`}} : null;
+    User.findAll()
         .then(data => {
             res.send(data);
         })
@@ -78,7 +107,6 @@ exports.findAll = (req, res) => {
 // Find a single User with an id
 exports.findOne = (req, res) => {
     const id = req.params.id;
-
     User.findByPk(id)
         .then(data => {
             res.send(data);
@@ -93,12 +121,11 @@ exports.findOne = (req, res) => {
 // Update a Tutorial by the id in the request
 exports.update = (req, res) => {
     const id = req.params.id;
-
     User.update(req.body, {
         where: {id: id}
     })
         .then(num => {
-            if (num == 1) {
+            if (num === 1) {
                 res.send({
                     message: "User updated successfully"
                 });

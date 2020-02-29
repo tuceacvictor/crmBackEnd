@@ -11,7 +11,10 @@ module.exports = (sequelize, Sequelize) => {
       },
       active: {
         type: Sequelize.BOOLEAN
-      }
+      },
+      role: {
+        type: Sequelize.STRING,
+      },
     });
   
     return User;
