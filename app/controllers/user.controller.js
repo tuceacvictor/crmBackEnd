@@ -21,7 +21,7 @@ exports.login = async (req, res) => {
             const token = jwt.sign({userId: user.id}, config.jwtSecret, {expiresIn: '1h'});
             res.send({
                 token: token,
-                user: {id: user.id, login: user.login, email: user.email, role: "admin"},
+                user: {id: user.id, login: user.login, email: user.email, role: "admin", registered: user.createdAt, lastUpdated: user.updatedAt},
                 theme: {primaryColor: "", secondaryColor: "", type: ""}
             });
         } else {
@@ -54,7 +54,7 @@ exports.create = async (req, res) => {
         const userCreate = User.create(user);
         res.send(userCreate)
     } catch (err) {
-        console.log(err)
+        console.log(err);
         res.status(500).send({
             message:
                 err.message || "Some error occurred while creating the User."
@@ -64,61 +64,52 @@ exports.create = async (req, res) => {
 
 // Change password
 exports.changePassword = async (req, res) => {
-    const {login, password, newPassword} = req.body;
-    let condition = login ? {login: {[Op.like]: `%${login}%`}} : null;
+    const {login, password, newPassword, id} = req.body;
+    let condition = id ? {id: {[Op.like]: `%${id}%`}} : null;
     try {
         const user = await User.findOne({where: condition});
         const isMatchPasswords = await bcrypt.compare(password, user.password);
-        if(isMatchPasswords){
-            //change password
-            const hashedPassword = await bcrypt.hash(newPassword, 8);
-            const updatedUser = {
-                login: login,
-                password: hashedPassword,
-                email: user.email,
-                role: user.role
-            };
-            res.status(200).json({message: 'Все окей , но пароль не изменен'})
-          //  User.create(updatedUser)
-        }else{
+        if (isMatchPasswords) {
+            const newHashedPassword = await bcrypt.hash(newPassword, 8);
+            user.update({
+                password: newHashedPassword
+            });
+            res.send(newHashedPassword)
+        } else {
             res.status(400).json({message: "Текущий пароль не верен"})
         }
     } catch (err) {
+        console.log(err);
         res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})
     }
 };
 
 // Retrieve all Users from the database.
-exports.findAll = (req, res) => {
-    //const email = req.body.email;
-    //let condition = email ? {email: {[Op.like]: `%${title}%`}} : null;
-    User.findAll()
-        .then(data => {
-            res.send(data);
-        })
-        .catch(err => {
-            res.status(500).send({
-                message:
-                    err.message || "Some error occurred while retrieving users."
-            });
-        });
+exports.findAll = async (req, res) => {
+    const {login} = req.body;
+    let condition = login ? {login: {[Op.like]: `%${login}%`}} : null;
+    try{
+        let allUsers = await User.findAll({where: condition});
+        res.send(allUsers)
+    }catch (err) {
+        console.log(err);
+        res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})
+    }
 };
 
 // Find a single User with an id
-exports.findOne = (req, res) => {
+exports.findOne = async (req, res) => {
     const id = req.params.id;
-    User.findByPk(id)
-        .then(data => {
-            res.send(data);
-        })
-        .catch(err => {
-            res.status(500).send({
-                message: "Error retrieving User with id=" + id
-            });
-        });
+    try {
+        let user = await User.findByPk(id);
+        res.send(user)
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})
+    }
 };
 
-// Update a Tutorial by the id in the request
+// Update a user by the id in the request
 exports.update = (req, res) => {
     const id = req.params.id;
     User.update(req.body, {
