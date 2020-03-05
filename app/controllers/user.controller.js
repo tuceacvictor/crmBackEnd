@@ -21,8 +21,15 @@ exports.login = async (req, res) => {
             const token = jwt.sign({userId: user.id}, config.jwtSecret, {expiresIn: '1h'});
             res.send({
                 token: token,
-                user: {id: user.id, login: user.login, email: user.email, role: "admin", registered: user.createdAt, lastUpdated: user.updatedAt},
-                theme: {primaryColor: "", secondaryColor: "", type: ""}
+                user: {
+                    id: user.id,
+                    login: user.login,
+                    email: user.email,
+                    role: "admin",
+                    registered: user.createdAt,
+                    lastUpdated: user.updatedAt
+                },
+                theme: {primaryColor: user.primaryColor, secondaryColor: user.secondaryColor, type: user.nightLight}
             });
         } else {
             res.status(400).json({message: "Не верный логин или пароль"})
@@ -88,10 +95,10 @@ exports.changePassword = async (req, res) => {
 exports.findAll = async (req, res) => {
     const {login} = req.body;
     let condition = login ? {login: {[Op.like]: `%${login}%`}} : null;
-    try{
+    try {
         let allUsers = await User.findAll({where: condition});
         res.send(allUsers)
-    }catch (err) {
+    } catch (err) {
         console.log(err);
         res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})
     }
@@ -109,52 +116,83 @@ exports.findOne = async (req, res) => {
     }
 };
 
-// Update a user by the id in the request
-exports.update = (req, res) => {
-    const id = req.params.id;
-    User.update(req.body, {
-        where: {id: id}
-    })
-        .then(num => {
-            if (num === 1) {
-                res.send({
-                    message: "User updated successfully"
-                });
-            } else {
-                res.send({
-                    message: `Cannot update User with id=${id}. Maybe User was not found or req.body is empty!`
-                });
-            }
-        })
-        .catch(err => {
-            res.status(500).send({
-                message: "Error updating User with id=" + id
+
+//change user appearance
+exports.changeTheme = async (req, res) => {
+    const {id, primaryColor, secondaryColor, nightLight} = req.body;
+    let condition = id ? {id: {[Op.like]: `%${id}%`}} : null;
+    try {
+        if (condition) {
+            const user = await User.findOne({where: condition});
+            user.update({
+                primaryColor,
+                secondaryColor,
+                nightLight
             });
-        })
+            res.send(user)
+        } else {
+            res.status(400).send({
+                message: "Такой пользователь не найден"
+            });
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})
+    }
+};
+
+// Update a user by the id in the request
+exports.update = async (req, res) => {
+    const {id, login, email, role} = req.body;
+    const condition = id ? {id: {[Op.like]: `%${id}%`}} : null;
+    try {
+        const user = await User.findOne({where: condition});
+        if(condition){
+            user.update({
+                login,
+                email,
+                role
+            });
+            res.send(user)
+        }else{
+            res.status(400).json({message: "Такой пользователь не найден"})
+        }
+    }catch (err) {
+        console.log(err);
+        res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})
+    }
 };
 
 // Delete a User with the specified id in the request
-exports.delete = (req, res) => {
-    const id = req.params.id;
-    User.destroy(
-        {where: {id: id}}
-    )
-        .then(num => {
-            if (num == 1) {
-                res.send({
-                    message: "User was deleted successfully!"
-                });
-            } else {
-                res.send({
-                    message: `Cannot delete User with id=${id}. Maybe Tutorial was not found!`
-                });
-            }
+exports.delete = async (req, res) => {
+    const {id} = req.body;
+    try {
+        User.destroy({
+            where: {id: id}
         })
-        .catch(err => {
-            res.status(500).send({
-                message: "Could not delete User with id=" + id
-            });
-        });
+    }catch (err) {
+        console.log(err);
+        res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})
+    }
+    // User.destroy(
+    //     {where: {id: id}}
+    // )
+    //     .then(num => {
+    //         if (num == 1) {
+    //             res.send({
+    //                 message: "User was deleted successfully!"
+    //             });
+    //         } else {
+    //             res.send({
+    //                 message: `Cannot delete User with id=${id}. Maybe Tutorial was not found!`
+    //             });
+    //         }
+    //     })
+    //     .catch(err => {
+    //         res.status(500).send({
+    //             message: "Could not delete User with id=" + id
+    //         });
+    //     });
 };
 
 // Delete all Users from the database.

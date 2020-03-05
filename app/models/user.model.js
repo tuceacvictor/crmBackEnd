@@ -15,6 +15,15 @@ module.exports = (sequelize, Sequelize) => {
       role: {
         type: Sequelize.STRING,
       },
+      primaryColor: {
+        type: Sequelize.STRING
+      },
+      secondaryColor: {
+        type: Sequelize.STRING
+      },
+      nightLight: {
+        type: Sequelize.BOOLEAN
+      }
     });
   
     return User;

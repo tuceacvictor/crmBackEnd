@@ -9,6 +9,9 @@ module.exports = app => {
     //change password
     router.post("/changePassword", auth, users.changePassword);
 
+    //change theme
+    router.post('/changeTheme', auth, users.changeTheme);
+
     // Create a new User
     router.post("/", users.create);
 
