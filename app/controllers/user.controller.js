@@ -58,8 +58,8 @@ exports.create = async (req, res) => {
             role: req.body.role
         };
         //save user
-        const userCreate = User.create(user);
-        res.send(userCreate)
+        await User.create(user);
+        res.send({message: 'Success'})
     } catch (err) {
         console.log(err);
         res.status(500).send({
@@ -81,7 +81,7 @@ exports.changePassword = async (req, res) => {
             user.update({
                 password: newHashedPassword
             });
-            res.send(newHashedPassword)
+            res.send({message: 'Success'})
         } else {
             res.status(400).json({message: "Текущий пароль не верен"})
         }
@@ -109,7 +109,7 @@ exports.findOne = async (req, res) => {
     const id = req.params.id;
     try {
         let user = await User.findByPk(id);
-        res.send(user)
+        res.send({message: 'Success'})
     } catch (err) {
         console.log(err);
         res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})
@@ -129,7 +129,7 @@ exports.changeTheme = async (req, res) => {
                 secondaryColor,
                 nightLight
             });
-            res.send(user)
+            res.send({message: 'Success'})
         } else {
             res.status(400).send({
                 message: "Такой пользователь не найден"
@@ -147,13 +147,14 @@ exports.update = async (req, res) => {
     const condition = id ? {id: {[Op.like]: `%${id}%`}} : null;
     try {
         const user = await User.findOne({where: condition});
-        if(condition){
+        if(condition && user){
+            console.log(login, email, role)
             user.update({
                 login,
                 email,
                 role
             });
-            res.send(user)
+            res.send({message: 'Success'})
         }else{
             res.status(400).json({message: "Такой пользователь не найден"})
         }
@@ -169,7 +170,8 @@ exports.delete = async (req, res) => {
     try {
         User.destroy({
             where: {id: id}
-        })
+        });
+        res.send({message: 'Success'})
     }catch (err) {
         console.log(err);
         res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})
