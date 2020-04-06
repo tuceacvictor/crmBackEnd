@@ -45,7 +45,7 @@ exports.create = async (req, res) => {
     try {
         if (!req.body.login) {
             res.status(400).send({
-                message: "Login can not be empty!"
+                message: "Логин не может быть пустым"
             });
             return;
         }
@@ -62,16 +62,13 @@ exports.create = async (req, res) => {
         res.send({message: 'Success'})
     } catch (err) {
         console.log(err);
-        res.status(500).send({
-            message:
-                err.message || "Some error occurred while creating the User."
-        });
+        res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})
     }
 };
 
 // Change password
 exports.changePassword = async (req, res) => {
-    const {login, password, newPassword, id} = req.body;
+    const {password, newPassword, id} = req.body;
     let condition = id ? {id: {[Op.like]: `%${id}%`}} : null;
     try {
         const user = await User.findOne({where: condition});
@@ -116,7 +113,6 @@ exports.findOne = async (req, res) => {
     }
 };
 
-
 //change user appearance
 exports.changeTheme = async (req, res) => {
     const {id, primaryColor, secondaryColor, nightLight} = req.body;
@@ -148,7 +144,6 @@ exports.update = async (req, res) => {
     try {
         const user = await User.findOne({where: condition});
         if(condition && user){
-            console.log(login, email, role)
             user.update({
                 login,
                 email,
@@ -176,25 +171,6 @@ exports.delete = async (req, res) => {
         console.log(err);
         res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})
     }
-    // User.destroy(
-    //     {where: {id: id}}
-    // )
-    //     .then(num => {
-    //         if (num == 1) {
-    //             res.send({
-    //                 message: "User was deleted successfully!"
-    //             });
-    //         } else {
-    //             res.send({
-    //                 message: `Cannot delete User with id=${id}. Maybe Tutorial was not found!`
-    //             });
-    //         }
-    //     })
-    //     .catch(err => {
-    //         res.status(500).send({
-    //             message: "Could not delete User with id=" + id
-    //         });
-    //     });
 };
 
 // Delete all Users from the database.

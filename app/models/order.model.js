@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-    const Order = sequelize.define("Order", {
+    return sequelize.define("Order", {
             id: {
                 type: Sequelize.INTEGER,
                 primaryKey: true
@@ -89,6 +89,4 @@ module.exports = (sequelize, Sequelize) => {
         {
             timestamps: false
         });
-
-    return Order;
 };

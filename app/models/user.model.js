@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-    const User = sequelize.define("User", {
+  return sequelize.define("User", {
       login: {
         type: Sequelize.STRING
       },
@@ -25,6 +25,4 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.BOOLEAN
       }
     });
-  
-    return User;
   };

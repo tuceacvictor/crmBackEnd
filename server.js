@@ -21,6 +21,8 @@ db.sequelize.sync();
 
 
 require("./app/routes/user.routes")(app);
+require("./app/routes/role.routes")(app);
+require("./app/routes/office.routes")(app);
 require("./app/routes/customer.routes")(app);
 require("./app/routes/order.routes")(app);
 
