@@ -15,6 +15,9 @@ module.exports = (sequelize, Sequelize) => {
       role: {
         type: Sequelize.STRING,
       },
+      office: {
+        type: Sequelize.STRING
+      },
       primaryColor: {
         type: Sequelize.STRING
       },

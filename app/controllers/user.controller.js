@@ -2,6 +2,7 @@ const db = require("../models");
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const config = require("../config/default");
+const validation = require("./validations/user.validation");
 const User = db.user;
 const Op = db.Sequelize.Op;
 
@@ -41,25 +42,22 @@ exports.login = async (req, res) => {
 
 // Create and Save a new User
 exports.create = async (req, res) => {
-    //validate request
+    const {login, password, email, office, role} = req.body;
     try {
-        if (!req.body.login) {
-            res.status(400).send({
-                message: "Логин не может быть пустым"
-            });
-            return;
-        }
-        const hashedPassword = await bcrypt.hash(req.body.password, 8);
+        //validate request
+        await validation.userCreate(req, res);
+        const hashedPassword = await bcrypt.hash(password, 8);
         //create user
         const user = {
-            login: req.body.login,
+            login: login,
             password: hashedPassword,
-            email: req.body.email,
-            role: req.body.role
+            email: email,
+            role: role,
+            office: office.join(',')
         };
         //save user
         await User.create(user);
-        res.send({message: 'Success'})
+        res.send({message: 'Пользователь создан'})
     } catch (err) {
         console.log(err);
         res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})
@@ -139,21 +137,25 @@ exports.changeTheme = async (req, res) => {
 
 // Update a user by the id in the request
 exports.update = async (req, res) => {
-    const {id, login, email, role} = req.body;
+    const {id, login, email, role, office} = req.body;
     const condition = id ? {id: {[Op.like]: `%${id}%`}} : null;
     try {
         const user = await User.findOne({where: condition});
-        if(condition && user){
+        if (office.length === 0) {
+            res.status(400).json({message: "Такой пользователь не найден"})
+        }
+        if (condition && user) {
             user.update({
                 login,
                 email,
-                role
+                role,
+                office: office.join(',')
             });
             res.send({message: 'Success'})
-        }else{
+        } else {
             res.status(400).json({message: "Такой пользователь не найден"})
         }
-    }catch (err) {
+    } catch (err) {
         console.log(err);
         res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})
     }
@@ -167,7 +169,7 @@ exports.delete = async (req, res) => {
             where: {id: id}
         });
         res.send({message: 'Success'})
-    }catch (err) {
+    } catch (err) {
         console.log(err);
         res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})
     }
