@@ -23,8 +23,9 @@ exports.userCreate = async (req, res) => {
         if (nullValues.length > 0) {
             if (nullValues.length === 1) {
                 errMessage = `${nullValues[0]} обязательное поле`;
+            } else {
+                errMessage = `${nullValues.join(',')} - обязательные поля`;
             }
-            errMessage = `${nullValues.join(',')} - обязательные поля`;
         }
 
         //check for existing users
@@ -37,8 +38,48 @@ exports.userCreate = async (req, res) => {
             res.status(400).send({
                 message: errMessage
             });
+            return false;
+        }else{
+            return true;
         }
+    } catch (e) {
+        console.log(e);
+        res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})
+    }
+};
 
+
+exports.userUpdate = async (req, res) => {
+    const {email, office, role} = req.body;
+    let values = [
+        {label: "е-майл", value: email},
+        {label: "офис", value: office},
+        {label: "роль", value: role}
+    ];
+    let nullValues = [];
+    let errMessage = undefined;
+    try {
+        //check for null values
+        values.forEach(value => {
+            if (!value.value) {
+                nullValues.push(value.label)
+            }
+        });
+        if (nullValues.length > 0) {
+            if (nullValues.length === 1) {
+                errMessage = `${nullValues[0]} - обязательное поле`;
+            } else {
+                errMessage = `${nullValues.join(',')} - обязательные поля`;
+            }
+        }
+        if (errMessage) {
+            res.status(400).send({
+                message: errMessage
+            });
+            return false;
+        }else{
+            return true;
+        }
     } catch (e) {
         console.log(e);
         res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})

@@ -22,7 +22,7 @@ module.exports = app => {
     router.get("/active", auth, users.findAllActive);
 
     // Retrieve a single User with id
-    router.get("/:id", auth, users.findOne);
+    router.post("/read", auth, users.findOne);
 
     // Update a User with id
     router.put("/update", auth, users.update);

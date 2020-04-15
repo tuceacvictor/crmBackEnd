@@ -46,10 +46,10 @@ exports.delete = async (req, res) => {
 
 //get office by id
 exports.findOne = async (req, res) => {
-    const id = req.params.id;
+    const {id} = req.body;
     try {
-        let user = await Office.findByPk(id);
-        res.send({message: 'Success'})
+        let office = await Office.findByPk(id);
+        res.send(office)
     } catch (err) {
         console.log(err);
         res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})
@@ -62,8 +62,8 @@ exports.findAll = async (req, res) => {
     const {name} = req.body;
     let condition = name ? {name: {[Op.like]: `%${name}%`}} : null;
     try {
-        let allUsers = await Office.findAll({where: condition});
-        res.send(allUsers)
+        let allOffices = await Office.findAll({where: condition});
+        res.send(allOffices)
     } catch (err) {
         console.log(err);
         res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})

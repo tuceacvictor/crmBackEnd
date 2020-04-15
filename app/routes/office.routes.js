@@ -7,9 +7,9 @@ module.exports = app => {
 
     router.get('/', auth, office.findAll);
 
-    router.delete('/:id', auth, office.delete);
+    router.delete('/', auth, office.delete);
 
-    router.post('/:id', auth, office.findOne);
+    router.post('/read', auth, office.findOne);
 
     app.use('/api/office', router);
 };

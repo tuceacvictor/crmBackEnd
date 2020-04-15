@@ -4,8 +4,8 @@ const jwt = require('jsonwebtoken');
 const config = require("../config/default");
 const validation = require("./validations/user.validation");
 const User = db.user;
+const Office = db.office;
 const Op = db.Sequelize.Op;
-
 
 //login user
 exports.login = async (req, res) => {
@@ -45,19 +45,22 @@ exports.create = async (req, res) => {
     const {login, password, email, office, role} = req.body;
     try {
         //validate request
-        await validation.userCreate(req, res);
-        const hashedPassword = await bcrypt.hash(password, 8);
-        //create user
-        const user = {
-            login: login,
-            password: hashedPassword,
-            email: email,
-            role: role,
-            office: office.join(',')
-        };
-        //save user
-        await User.create(user);
-        res.send({message: 'Пользователь создан'})
+        let validate = await validation.userCreate(req, res);
+        if (validate) {
+            const hashedPassword = await bcrypt.hash(password, 8);
+            //create user
+            let userOffices = office ? office.map(office => office.id) : [];
+            const user = {
+                login: login,
+                password: hashedPassword,
+                email: email,
+                role: role,
+                office: userOffices.join(',')
+            };
+            //save user
+            await User.create(user);
+            res.send({message: 'Пользователь создан'})
+        }
     } catch (err) {
         console.log(err);
         res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})
@@ -101,10 +104,19 @@ exports.findAll = async (req, res) => {
 
 // Find a single User with an id
 exports.findOne = async (req, res) => {
-    const id = req.params.id;
+    const {id} = req.body;
     try {
         let user = await User.findByPk(id);
-        res.send({message: 'Success'})
+        let newOffices = [];
+        if (user.office) {
+            let userOffices = user.office.split(',');
+            newOffices = await Office.findAll({
+                where: {
+                    id: userOffices
+                }
+            });
+        }
+        res.send({...user.dataValues, office: newOffices})
     } catch (err) {
         console.log(err);
         res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})
@@ -137,23 +149,24 @@ exports.changeTheme = async (req, res) => {
 
 // Update a user by the id in the request
 exports.update = async (req, res) => {
-    const {id, login, email, role, office} = req.body;
+    const {id, login, email, role, office = []} = req.body;
     const condition = id ? {id: {[Op.like]: `%${id}%`}} : null;
     try {
         const user = await User.findOne({where: condition});
-        if (office.length === 0) {
-            res.status(400).json({message: "Такой пользователь не найден"})
-        }
-        if (condition && user) {
-            user.update({
-                login,
-                email,
-                role,
-                office: office.join(',')
-            });
-            res.send({message: 'Success'})
-        } else {
-            res.status(400).json({message: "Такой пользователь не найден"})
+        let userOffices = office ? office.map(office => office.id) : [];
+        let validate = await validation.userUpdate(req, res);
+        if (validate) {
+            if (condition && user) {
+                user.update({
+                    login,
+                    email,
+                    role,
+                    office: userOffices.join(',')
+                });
+                res.send({message: 'Success'})
+            } else {
+                res.status(400).json({message: "Такой пользователь не найден"})
+            }
         }
     } catch (err) {
         console.log(err);
