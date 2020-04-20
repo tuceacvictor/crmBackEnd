@@ -3,6 +3,7 @@ const Office = db.office;
 const Op = db.Sequelize.Op;
 
 
+
 //create office
 exports.create = async (req, res) => {
     const {name, address} = req.body;
