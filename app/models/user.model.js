@@ -18,6 +18,9 @@ module.exports = (sequelize, Sequelize) => {
       office: {
         type: Sequelize.STRING
       },
+      defaultOffice: {
+        type: Sequelize.STRING
+      },
       primaryColor: {
         type: Sequelize.STRING
       },

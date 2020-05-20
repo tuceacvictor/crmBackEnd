@@ -5,23 +5,8 @@ module.exports = {
         return Promise.all([
             queryInterface.addColumn(
                 'users',
-                'primaryColor',
+                'defaultOffice',
                 Sequelize.STRING
-            ),
-            queryInterface.addColumn(
-                'users',
-                'secondaryColor',
-                Sequelize.STRING
-            ),
-            queryInterface.addColumn(
-                'users',
-                'nightLight',
-                Sequelize.BOOLEAN
-            ),
-            queryInterface.addColumn(
-                'users',
-                'office',
-                Sequelize.ABSTRACT
             )
         ]);
 

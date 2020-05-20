@@ -23,4 +23,7 @@ db.role = require("./role.model")(sequelize, Sequelize);
 db.office = require("./office.model")(sequelize, Sequelize);
 db.customer = require("./customer.model")(sequelize, Sequelize);
 db.order = require("./order.model")(sequelize, Sequelize);
+db.stock = require("./stock/stock.model")(sequelize, Sequelize);
+db.defectStock = require("./stock/defectStock.model")(sequelize, Sequelize);
+db.category = require("./stock/category.model")(sequelize, Sequelize);
 module.exports = db;

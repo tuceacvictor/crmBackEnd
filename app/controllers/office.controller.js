@@ -46,7 +46,6 @@ exports.delete = async (req, res) => {
     }
 };
 
-
 //get office by id
 exports.findOne = async (req, res) => {
     const {id} = req.body;

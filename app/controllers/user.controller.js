@@ -16,7 +16,12 @@ exports.login = async (req, res) => {
         if (!user) {
             res.status(400).json({message: "Не верный логин или пароль"});
         }
-
+        let userOffices = user.office.split(',');
+        let newOffices = await Office.findAll({
+            where: {
+                id: userOffices
+            }
+        });
         const isMatchPasswords = await bcrypt.compare(password, user.password);
         if (isMatchPasswords === true) {
             const token = jwt.sign({userId: user.id}, config.jwtSecret, {expiresIn: '1h'});
@@ -26,9 +31,11 @@ exports.login = async (req, res) => {
                     id: user.id,
                     login: user.login,
                     email: user.email,
-                    role: "admin",
+                    role: user.role,
+                    office: newOffices,
                     registered: user.createdAt,
-                    lastUpdated: user.updatedAt
+                    lastUpdated: user.updatedAt,
+                    defaultOffice: user.defaultOffice
                 },
                 theme: {primaryColor: user.primaryColor, secondaryColor: user.secondaryColor, type: user.nightLight}
             });
@@ -55,7 +62,8 @@ exports.create = async (req, res) => {
                 password: hashedPassword,
                 email: email,
                 role: role,
-                office: userOffices.join(',')
+                office: userOffices.join(','),
+                defaultOffice: userOffices.join(',')[0]
             };
             //save user
             await User.create(user);

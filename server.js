@@ -26,6 +26,11 @@ require("./app/routes/role.routes")(app);
 require("./app/routes/office.routes")(app);
 require("./app/routes/customer.routes")(app);
 require("./app/routes/order.routes")(app);
+require("./app/routes/stock/stock.routes")(app);
+require("./app/routes/stock/defectStock.routes")(app);
+require("./app/routes/stock/category.routes")(app);
+
+
 utils.initializeApp();
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;
