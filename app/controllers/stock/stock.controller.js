@@ -24,7 +24,7 @@ exports.create = async (req, res) => {
             return;
         }
         let newRecord = {
-            name, category: category_id.id, count, office_id, price
+            name, category_id: category_id.id, count, office_id, price
         };
         Stock.create(newRecord);
         res.send({message: 'Success'})
