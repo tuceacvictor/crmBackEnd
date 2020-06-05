@@ -1,3 +1,5 @@
+
+
 module.exports = (sequelize, Sequelize) => {
     return sequelize.define('Stock', {
         id: {
@@ -8,14 +10,30 @@ module.exports = (sequelize, Sequelize) => {
         name: {
             type: Sequelize.STRING
         },
-        category: {
-            type: Sequelize.STRING
+
+        category_id: {
+            type: Sequelize.INTEGER,
+            references: {
+                model: 'Categories',
+                key: 'id'
+            },
+            onDelete: 'cascade',
+            onUpdate: 'cascade',
+        },
+        price: {
+            type: Sequelize.INTEGER
         },
         count: {
             type: Sequelize.INTEGER
         },
         office_id: {
-            type: Sequelize.INTEGER
+            type: Sequelize.INTEGER,
+            references: {
+                model: 'offices',
+                key: 'id'
+            },
+            onDelete: 'cascade',
+            onUpdate: 'cascade',
         }
     }, {
         timestamps: true

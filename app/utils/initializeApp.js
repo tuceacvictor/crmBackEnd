@@ -15,7 +15,7 @@ exports.initializeApp = async () => {
                 login: 'admin',
                 password: hashedPassword,
                 email: 'tuceak16@gmail.com',
-                role: '0',
+                role: 'admin',
                 office: 'all'
             };
             User.create(user);
@@ -24,7 +24,10 @@ exports.initializeApp = async () => {
 
         //check for roles
         if (roles.length === 0) {
-
+            const role = {
+                name: 'admin'
+            };
+            Role.create(role)
         }
     } catch (e) {
         console.log(e)

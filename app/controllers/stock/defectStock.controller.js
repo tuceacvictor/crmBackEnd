@@ -1,4 +1,5 @@
 const db = require("../../models");
+const Category = db.category;
 const DefectStock = db.defectStock;
 const Op = db.Sequelize.Op;
 
@@ -30,13 +31,13 @@ exports.create = async (req, res) => {
 
 //update by id
 exports.update = async (req, res) => {
-    const {id, name, category, count, office_id} = req.body;
+    const {id, count, office_id} = req.body;
     const condition = id ? {id: {[Op.like]: `%${id}%`}} : null;
     try {
         const record = await DefectStock.findOne({where: condition});
         if (condition && record) {
             record.update({
-                id, name, category, count, office_id
+                count
             });
             res.send({message: 'Success'})
         } else {
@@ -53,7 +54,8 @@ exports.read = async (req, res) => {
     const {id} = req.body;
     try {
         let record = await DefectStock.findByPk(id);
-        res.send(record)
+        let categoryObj = await Category.findByPk(record.category);
+        res.send({...record.dataValues, category: categoryObj})
     } catch (err) {
         console.log(err);
         res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})

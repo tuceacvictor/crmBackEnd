@@ -11,6 +11,7 @@ module.exports = app => {
 
     router.post('/read', auth, defectStock.read);
 
+    router.put('/update', auth, defectStock.update);
 
     app.use('/api/defectStock', router);
 };

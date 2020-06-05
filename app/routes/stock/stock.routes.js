@@ -11,7 +11,9 @@ module.exports = app => {
 
     router.post('/read', auth, stock.read);
 
-    router.post('/moveToDefect', auth, stock.read);
+    router.put('/update', auth, stock.update);
+
+    router.post('/moveToDefect', auth, stock.moveToDefect);
 
     app.use('/api/stock', router);
 };

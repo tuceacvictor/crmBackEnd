@@ -11,6 +11,5 @@ module.exports = app => {
 
     router.post('/read', auth, category.read);
 
-
     app.use('/api/category', router);
 };

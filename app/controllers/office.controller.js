@@ -58,7 +58,6 @@ exports.findOne = async (req, res) => {
     }
 };
 
-
 //get all offices
 exports.findAll = async (req, res) => {
     const {name} = req.body;
@@ -66,6 +65,26 @@ exports.findAll = async (req, res) => {
     try {
         let allOffices = await Office.findAll({where: condition});
         res.send(allOffices)
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})
+    }
+};
+
+//update by id
+exports.update = async (req, res) => {
+    const {id, address, name} = req.body;
+    const condition = id ? {id: {[Op.like]: `%${id}%`}} : null;
+    try {
+        const record = await Office.findOne({where: condition});
+        if (condition && record) {
+            record.update({
+                name, address
+            });
+            res.send({message: 'Success'})
+        } else {
+            res.status(400).json({message: "Такой офис не найден"})
+        }
     } catch (err) {
         console.log(err);
         res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})

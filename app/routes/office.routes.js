@@ -11,5 +11,6 @@ module.exports = app => {
 
     router.post('/read', auth, office.findOne);
 
+    router.put('/update', auth, office.update);
     app.use('/api/office', router);
 };
