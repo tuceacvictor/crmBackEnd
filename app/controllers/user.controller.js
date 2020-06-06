@@ -1,11 +1,23 @@
 const db = require("../models");
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
+const generator = require('generate-password');
 const config = require("../config/default");
 const validation = require("./validations/user.validation");
 const User = db.user;
 const Office = db.office;
 const Op = db.Sequelize.Op;
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'tuceak16@gmail.com',
+        pass: 'gamemaster503'
+    }
+});
+
+
 
 //login user
 exports.login = async (req, res) => {
@@ -49,7 +61,18 @@ exports.login = async (req, res) => {
 
 // Create and Save a new User
 exports.create = async (req, res) => {
-    const {login, password, email, office, role} = req.body;
+    const {login, email, office, role} = req.body;
+    const password = generator.generate({
+        length: 10,
+        numbers: true
+    });
+    const mailOptions = {
+        from: 'tuceack16@gmail.com',
+        to: email,
+        subject: 'Apple4you CRM registration',
+        text: `Вы были зарегестрированны в CRM Apple4you,\n ваш логин: ${login}, пароль: ${password},\n
+        пройдите по ссылке https://apple4you.tu4ka.tech/login для входа в систему`
+    };
     try {
         //validate request
         let validate = await validation.userCreate(req, res);
@@ -67,6 +90,13 @@ exports.create = async (req, res) => {
             };
             //save user
             await User.create(user);
+            transporter.sendMail(mailOptions, function(error, info){
+                if (error) {
+                    console.log(error);
+                } else {
+                    console.log('Email sent: ' + info.response);
+                }
+            });
             res.send({message: 'Пользователь создан'})
         }
     } catch (err) {

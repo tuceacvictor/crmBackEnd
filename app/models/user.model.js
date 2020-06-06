@@ -30,5 +30,7 @@ module.exports = (sequelize, Sequelize) => {
       nightLight: {
         type: Sequelize.BOOLEAN
       }
-    });
+    }, {
+      tableName: 'user'
+  });
   };

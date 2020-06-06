@@ -3,10 +3,10 @@ const User = db.user;
 const Op = db.Sequelize.Op;
 
 exports.userCreate = async (req, res) => {
-    const {login, password, email, office, role} = req.body;
+    const {login, email, office, role} = req.body;
     let values = [
         {label: "логин", value: login},
-        {label: "пароль", value: password},
+        {label: "пароль", value: 'a'},
         {label: "е-майл", value: email},
         {label: "офис", value: office},
         {label: "роль", value: role}

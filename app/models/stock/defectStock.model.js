@@ -21,6 +21,7 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.STRING
         }
     }, {
-        timestamps: true
+        timestamps: true,
+        tableName: 'defectStock'
     });
 };

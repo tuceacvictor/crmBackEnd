@@ -1,7 +1,7 @@
 
 
 module.exports = (sequelize, Sequelize) => {
-    return sequelize.define('Stock', {
+    return sequelize.define('stock', {
         id: {
             type: Sequelize.INTEGER,
             autoIncrement: true,
@@ -14,7 +14,7 @@ module.exports = (sequelize, Sequelize) => {
         category_id: {
             type: Sequelize.INTEGER,
             references: {
-                model: 'Categories',
+                model: 'category',
                 key: 'id'
             },
             onDelete: 'cascade',
@@ -29,13 +29,14 @@ module.exports = (sequelize, Sequelize) => {
         office_id: {
             type: Sequelize.INTEGER,
             references: {
-                model: 'offices',
+                model: 'office',
                 key: 'id'
             },
             onDelete: 'cascade',
             onUpdate: 'cascade',
         }
     }, {
-        timestamps: true
+        timestamps: true,
+        tableName: "stock"
     });
 };

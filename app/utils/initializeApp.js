@@ -30,6 +30,6 @@ exports.initializeApp = async () => {
             Role.create(role)
         }
     } catch (e) {
-        console.log(e)
+        console.log('INIT ERROR', e)
     }
 };

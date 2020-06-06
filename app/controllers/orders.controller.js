@@ -1,25 +1,25 @@
 const db = require("../models");
 const sequelize = require("sequelize");
-const Order = db.order;
-const Customer = db.customer;
+const order = db.order;
+const customer = db.customer;
 
 
 exports.getOrders = async (req, res) => {
-    Order.hasMany(Customer, {foreignKey: 'id'});
-    let _q = Order;
+    order.hasMany(customer, {foreignKey: 'id'});
     try {
-        const Order = await _q.findAll({
-            include: [{model: Customer}],
+        const response = await order.findAll({
+            include: [{model: customer}],
             attributes: [
                 [sequelize.fn('COUNT', sequelize.col('client_id')), 'orders_count'],
-                [sequelize.col('customers.name'), 'name'],
-                [sequelize.col('customers.phone'), 'phone'],
+                [sequelize.col(`name`), `name`],
+                [sequelize.col(`phone`), `phone`],
             ],
-            group: ['customers.phone'],
+            group: [`phone`],
 
         });
-        res.send(Order)
+        res.send(response)
     } catch (e) {
+        console.log(e)
         res.status(500).json({message: e.message || 'Что-то пошло не так, попробуйте снова'})
     }
 };

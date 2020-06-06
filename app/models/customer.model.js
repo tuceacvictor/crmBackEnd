@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-    return sequelize.define("Customer", {
+    return sequelize.define("customer", {
         id: {
             type: Sequelize.INTEGER,
             primaryKey: true
@@ -11,6 +11,7 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.INTEGER
         },
     }, {
-        timestamps: false
+        timestamps: false,
+        tableName: 'customer'
     });
 };
