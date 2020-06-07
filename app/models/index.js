@@ -1,6 +1,6 @@
 const dbConfig = require("../config/db.config");
 const Sequelize = require("sequelize");
-
+const utils = require('../../app/utils/initializeApp');
 const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
     host: dbConfig.HOST,
     dialect: dbConfig.dialect,
@@ -21,10 +21,11 @@ db.user = require("./user.model")(sequelize, Sequelize);
 db.role = require("./role.model")(sequelize, Sequelize);
 db.office = require("./office.model")(sequelize, Sequelize);
 db.order = require("./order.model")(sequelize, Sequelize);
+db.whereKnown = require("./whereKnown.model")(sequelize, Sequelize);
 db.customer = require("./customer.model")(sequelize, Sequelize);
 db.category = require("./stock/category.model")(sequelize, Sequelize);
 db.stock = require("./stock/stock.model")(sequelize, Sequelize);
 db.defectStock = require("./stock/defectStock.model")(sequelize, Sequelize);
-
+utils.initializeApp(db.user, db.role);
 
 module.exports = db;

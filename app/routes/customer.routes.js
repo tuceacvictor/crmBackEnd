@@ -1,11 +1,17 @@
 const auth = require('../middleware/auth.middleware');
 const router = require("express").Router();
-const customers = require("../controllers/customer.controller.js");
+const customer = require("../controllers/customer.controller.js");
 
 module.exports = (app) => {
+    router.post('/create', auth, customer.create);
 
-    //get all customers
-    router.get("/", auth, customers.getCustomers);
+    router.get('/', auth, customer.getAll);
 
-    app.use('/api/customers', router);
+    router.put('/update', auth, customer.update);
+
+    router.delete('/', auth, customer.delete);
+
+    router.post('/read', auth, customer.read);
+
+    app.use('/api/customer', router);
 };

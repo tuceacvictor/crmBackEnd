@@ -1,29 +1,26 @@
 const db = require("../models");
-const Op = db.Sequelize.Op;
-const Customer = db.customer;
 const WhereKnown = db.whereKnown;
+const Op = db.Sequelize.Op;
 
 
 //create
 exports.create = async (req, res) => {
-    const {name, phone, whereKnown_id} = req.body;
+    const {name} = req.body;
     try {
-        let condition = name ? {phone: {[Op.like]: `%${name}%`}} : null;
-        let findRecord = await Customer.findOne({where: condition});
+        let condition = name ? {name: {[Op.like]: `%${name}%`}} : null;
+        let findRecord = await WhereKnown.findOne({where: condition});
         if (findRecord) {
-            res.status(500).json({message: "Клиент с таким номером телефона уже существует"});
+            res.status(500).json({message: "Тип с таким именем уже существует"});
             return;
         }
-        if (!name && !phone && !whereKnown_id) {
+        if (!name) {
             res.status(500).json({message: "Заполните обязательные поля"});
             return;
         }
         let newRecord = {
-            name,
-            phone,
-            whereKnown_id: whereKnown_id.id
+            name
         };
-        Customer.create(newRecord);
+        WhereKnown.create(newRecord);
         res.send({message: 'Success'})
     } catch (err) {
         console.log(err);
@@ -33,17 +30,17 @@ exports.create = async (req, res) => {
 
 //update by id
 exports.update = async (req, res) => {
-    const {id, name, phone, whereKnown_id} = req.body;
+    const {id, name} = req.body;
     const condition = id ? {id: {[Op.like]: `%${id}%`}} : null;
     try {
-        const record = await Customer.findOne({where: condition});
+        const record = await WhereKnown.findOne({where: condition});
         if (condition && record) {
             record.update({
-                id, name, phone, whereKnown_id: whereKnown_id.id
+                id, name
             });
             res.send({message: 'Success'})
         } else {
-            res.status(400).json({message: "Такой клиент не найден"})
+            res.status(400).json({message: "Такой тип не найден"})
         }
     } catch (err) {
         console.log(err);
@@ -55,9 +52,8 @@ exports.update = async (req, res) => {
 exports.read = async (req, res) => {
     const {id} = req.body;
     try {
-        let record = await Customer.findByPk(id);
-        let whereKnown = await WhereKnown.findByPk(record.whereKnown_id);
-        res.send({...record.dataValues, whereKnown_id: whereKnown})
+        let record = await WhereKnown.findByPk(id);
+        res.send(record)
     } catch (err) {
         console.log(err);
         res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})
@@ -66,12 +62,12 @@ exports.read = async (req, res) => {
 
 //delete
 exports.delete = async (req, res) => {
-    const {id} = req.body;
+    const {id, name} = req.body;
     try {
-        Customer.destroy({
+        WhereKnown.destroy({
             where: {id: id}
         });
-        res.send({message: `Клиент ${id} удалён`})
+        res.send({message: `Тип ${name} удалён`})
     } catch (err) {
         console.log(err);
         res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})
@@ -83,7 +79,7 @@ exports.getAll = async (req, res) => {
     const {name} = req.body;
     let condition = name ? {name: {[Op.like]: `%${name}%`}} : null;
     try {
-        let allRecords = await Customer.findAll({where: condition});
+        let allRecords = await WhereKnown.findAll({where: condition});
         res.send(allRecords)
     } catch (err) {
         console.log(err);

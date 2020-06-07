@@ -7,6 +7,8 @@ module.exports = app => {
 
     router.get('/', auth, category.getAll);
 
+    router.put('/update', auth, category.update);
+
     router.delete('/', auth, category.delete);
 
     router.post('/read', auth, category.read);
