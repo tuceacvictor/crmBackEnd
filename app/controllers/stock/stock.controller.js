@@ -1,3 +1,4 @@
+const {paginate} = require('../utils/paginate');
 const db = require("../../models");
 const Stock = db.stock;
 const DefectStock = db.defectStock;
@@ -87,10 +88,10 @@ exports.delete = async (req, res) => {
 
 //get all
 exports.getAll = async (req, res) => {
-    const {name} = req.body;
-    let condition = name ? {name: {[Op.like]: `%${name}%`}} : null;
+    const {page, pageSize, search} = req.query;
+    let condition = search ? {name: {[Op.like]: `%${search}%`}} : null;
     try {
-        let allRecords = await Stock.findAll({where: condition});
+        let allRecords = await Stock.findAndCountAll({where: condition, ...paginate({page, pageSize})});
         res.send(allRecords)
     } catch (err) {
         console.log(err);

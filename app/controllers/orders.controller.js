@@ -1,3 +1,4 @@
+const {paginate} = require('./utils/paginate')
 const db = require("../models");
 const sequelize = require("sequelize");
 const order = db.order;

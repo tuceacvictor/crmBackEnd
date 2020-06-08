@@ -2,7 +2,6 @@ const bcrypt = require('bcryptjs');
 
 exports.initializeApp = async (User, Role) => {
     try {
-        console.log(User, Role)
         if(User && Role){
             const users = await User.findAll();
             const roles = await Role.findAll();

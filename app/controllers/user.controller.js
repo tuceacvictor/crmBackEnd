@@ -1,3 +1,4 @@
+const {paginate} = require('./utils/paginate');
 const db = require("../models");
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -129,10 +130,10 @@ exports.changePassword = async (req, res) => {
 
 // Retrieve all Users from the database.
 exports.findAll = async (req, res) => {
-    const {login} = req.body;
-    let condition = login ? {login: {[Op.like]: `%${login}%`}} : null;
+    const {page, pageSize, search} = req.query;
+    let condition = search ? {login: {[Op.like]: `%${search}%`}} : null;
     try {
-        let allUsers = await User.findAll({where: condition});
+        let allUsers = await User.findAndCountAll({where: condition, ...paginate({page, pageSize})});
         res.send(allUsers)
     } catch (err) {
         console.log(err);

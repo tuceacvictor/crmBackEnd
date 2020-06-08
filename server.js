@@ -18,9 +18,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
 
-//db.sequelize.sync();
+db.sequelize.sync();
 //db.sequelize.sync({force: true});
-db.sequelize.sync({ alter: true });
+//db.sequelize.sync({ alter: true });
 
 
 require("./app/routes/user.routes")(app);

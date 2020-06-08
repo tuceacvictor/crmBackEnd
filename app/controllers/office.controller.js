@@ -1,9 +1,7 @@
+const {paginate} = require('./utils/paginate');
 const db = require("../models");
 const Office = db.office;
 const Op = db.Sequelize.Op;
-
-
-
 
 
 //create office
@@ -60,10 +58,10 @@ exports.findOne = async (req, res) => {
 
 //get all offices
 exports.findAll = async (req, res) => {
-    const {name} = req.body;
-    let condition = name ? {name: {[Op.like]: `%${name}%`}} : null;
+    const {page, pageSize, search} = req.query;
+    let condition = search !== 'undefined' ? {name: {[Op.like]: `%${search}%`}} : null;
     try {
-        let allOffices = await Office.findAll({where: condition});
+        let allOffices = await Office.findAndCountAll({where: condition, ...paginate({page, pageSize})});
         res.send(allOffices)
     } catch (err) {
         console.log(err);
