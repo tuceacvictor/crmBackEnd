@@ -83,7 +83,7 @@ exports.getAll = async (req, res) => {
     let condition = search ? {name: {[Op.like]: `%${search}%`}} : null;
     try {
         let allRecords = await DefectStock.findAndCountAll({where: condition, ...paginate({page, pageSize})});
-        res.send(allRecords)
+        res.send({...allRecords, page: parseInt(page), pageSize: parseInt(pageSize)})
     } catch (err) {
         console.log(err);
         res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})

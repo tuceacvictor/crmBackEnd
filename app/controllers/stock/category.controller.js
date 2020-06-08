@@ -78,10 +78,10 @@ exports.delete = async (req, res) => {
 //get all
 exports.getAll = async (req, res) => {
     const {page, pageSize, search} = req.query;
-    let condition = search ? {name: {[Op.like]: `%${search}%`}} : null;
+    let condition = search !== 'undefined' ? {name: {[Op.like]: `%${search}%`}} : null;
     try {
         let allRecords = await Category.findAndCountAll({where: condition, ...paginate({page, pageSize})});
-        res.send(allRecords)
+        res.send({...allRecords, page: parseInt(page), pageSize: parseInt(pageSize)})
     } catch (err) {
         console.log(err);
         res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})

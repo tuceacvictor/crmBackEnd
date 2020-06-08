@@ -61,8 +61,8 @@ exports.findAll = async (req, res) => {
     const {page, pageSize, search} = req.query;
     let condition = search !== 'undefined' ? {name: {[Op.like]: `%${search}%`}} : null;
     try {
-        let allOffices = await Office.findAndCountAll({where: condition, ...paginate({page, pageSize})});
-        res.send(allOffices)
+        let allRecords = await Office.findAndCountAll({where: condition, ...paginate({page, pageSize})});
+        res.send({...allRecords, page: parseInt(page), pageSize: parseInt(pageSize)})
     } catch (err) {
         console.log(err);
         res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})

@@ -133,8 +133,8 @@ exports.findAll = async (req, res) => {
     const {page, pageSize, search} = req.query;
     let condition = search ? {login: {[Op.like]: `%${search}%`}} : null;
     try {
-        let allUsers = await User.findAndCountAll({where: condition, ...paginate({page, pageSize})});
-        res.send(allUsers)
+        let allRecords = await User.findAndCountAll({where: condition, ...paginate({page, pageSize})});
+        res.send({...allRecords, page: parseInt(page), pageSize: parseInt(pageSize)})
     } catch (err) {
         console.log(err);
         res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})
