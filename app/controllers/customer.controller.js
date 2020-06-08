@@ -1,4 +1,4 @@
-const {paginate} = require('./utils/paginate')
+const {paginate} = require('./utils/paginate');
 const db = require("../models");
 const Op = db.Sequelize.Op;
 const Customer = db.customer;
@@ -9,7 +9,7 @@ const WhereKnown = db.whereKnown;
 exports.create = async (req, res) => {
     const {name, phone, whereKnown_id} = req.body;
     try {
-        let condition = name ? {phone: {[Op.like]: `%${name}%`}} : null;
+        let condition = phone ? {phone: {[Op.like]: `%${phone}%`}} : null;
         let findRecord = await Customer.findOne({where: condition});
         if (findRecord) {
             res.status(500).json({message: "Клиент с таким номером телефона уже существует"});
