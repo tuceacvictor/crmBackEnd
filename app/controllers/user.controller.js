@@ -156,7 +156,6 @@ exports.read = async (req, res) => {
         let user = await User.findByPk(id);
         let newOffices = [];
         if (user.officeId) {
-            console.log(user.officeId)
             let userOffices = `${user.officeId}`.split(',');
             newOffices = await Office.findAll({
                 where: {
