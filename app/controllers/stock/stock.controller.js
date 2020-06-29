@@ -2,13 +2,13 @@ const {paginate} = require('../utils/paginate');
 const db = require("../../models");
 const Stock = db.stock;
 const DefectStock = db.defectStock;
-const Category = db.category;
+const category = db.category;
 const Op = db.Sequelize.Op;
 
 
 //create
 exports.create = async (req, res) => {
-    const {name, category_id, count, office_id, price} = req.body;
+    const {name, categoryId, count, office_id, price} = req.body;
     try {
         let condition = name ? {name: {[Op.like]: `%${name}%`}} : null;
         let findRecord = await Stock.findOne({where: condition});
@@ -20,12 +20,12 @@ exports.create = async (req, res) => {
             res.status(500).json({message: "Офис не выбран"});
             return;
         }
-        if (!category_id || !name || !count || !office_id || !price) {
+        if (!categoryId || !name || !count || !office_id || !price) {
             res.status(500).json({message: "Заполните обязательные поля"});
             return;
         }
         let newRecord = {
-            name, category_id: category_id.id, count, office_id, price
+            name, categoryId: categoryId.id, count, office_id, price
         };
         Stock.create(newRecord);
         res.send({message: 'Success'})
@@ -37,7 +37,7 @@ exports.create = async (req, res) => {
 
 //update by id
 exports.update = async (req, res) => {
-    const {id, name, category_id, count, office_id, price} = req.body;
+    const {id, name, categoryId, count, office_id, price} = req.body;
     const condition = id ? {id: {[Op.like]: `%${id}%`}} : null;
     try {
         const record = await Stock.findOne({where: condition});
@@ -47,7 +47,7 @@ exports.update = async (req, res) => {
         }
         if (condition && record) {
             record.update({
-                id, name, category_id: category_id.id, count, office_id, price
+                id, name, categoryId: categoryId.id, count, office_id, price
             });
             res.send({message: 'Success'})
         } else {
@@ -64,8 +64,8 @@ exports.read = async (req, res) => {
     const {id} = req.body;
     try {
         let record = await Stock.findByPk(id);
-        let categoryObj = await Category.findByPk(record.category_id);
-        res.send({...record.dataValues, category_id: categoryObj})
+        let categoryObj = await category.findByPk(record.categoryId);
+        res.send({...record.dataValues, categoryId: categoryObj})
     } catch (err) {
         console.log(err);
         res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})
@@ -91,7 +91,11 @@ exports.getAll = async (req, res) => {
     const {page, pageSize, search} = req.query;
     let condition = search ? {name: {[Op.like]: `%${search}%`}} : null;
     try {
-        let allRecords = await Stock.findAndCountAll({where: condition, ...paginate({page, pageSize})});
+        let allRecords = await Stock.findAndCountAll({
+            include: category,
+            where: condition,
+             ...paginate({page, pageSize})
+            });
         res.send({...allRecords, page: parseInt(page), pageSize: parseInt(pageSize)})
     } catch (err) {
         console.log(err);
@@ -101,11 +105,11 @@ exports.getAll = async (req, res) => {
 
 //move to defectStock
 exports.moveToDefect = async (req, res) => {
-    const {id, count, office_id, name, category_id, description} = req.body;
+    const {id, count, office_id, name, categoryId, description} = req.body;
     const condition = id ? {id: id, office_id: office_id} : null;
     try {
         const record = await Stock.findOne({where: condition});
-        const isDefectRecord = await DefectStock.findOne({where: {name, category: category_id.id}});
+        const isDefectRecord = await DefectStock.findOne({where: {name, category: categoryId.id}});
         console.log(record);
         if (condition && record) {
             if(isDefectRecord){
@@ -119,7 +123,7 @@ exports.moveToDefect = async (req, res) => {
                 })
             }else{
                 DefectStock.create({
-                    name, category: category_id.id, count, office_id, description
+                    name, category: categoryId.id, count, office_id, description
                 });
                 record.update({
                     count: record.count - count

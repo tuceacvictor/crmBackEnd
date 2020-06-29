@@ -3,13 +3,13 @@ const User = db.user;
 const Op = db.Sequelize.Op;
 
 exports.userCreate = async (req, res) => {
-    const {login, email, office, role} = req.body;
+    const {login, email, officeId, roleId} = req.body;
     let values = [
         {label: "логин", value: login},
         {label: "пароль", value: 'a'},
         {label: "е-майл", value: email},
-        {label: "офис", value: office},
-        {label: "роль", value: role}
+        {label: "офис", value: officeId},
+        {label: "роль", value: roleId}
     ];
     let nullValues = [];
     let errMessage = undefined;
@@ -50,11 +50,11 @@ exports.userCreate = async (req, res) => {
 
 
 exports.userUpdate = async (req, res) => {
-    const {email, office, role} = req.body;
+    const {email, officeId, roleId} = req.body;
     let values = [
         {label: "е-майл", value: email},
-        {label: "офис", value: office},
-        {label: "роль", value: role}
+        {label: "офис", value: officeId},
+        {label: "роль", value: roleId}
     ];
     let nullValues = [];
     let errMessage = undefined;

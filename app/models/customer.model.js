@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-    return sequelize.define("customer", {
+    const customer = sequelize.define("customer", {
         id: {
             type: Sequelize.INTEGER,
             primaryKey: true,
@@ -13,18 +13,29 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.STRING,
             notNull: true,
         },
-        whereKnown_id: {
-            type: Sequelize.INTEGER,
-            notNull: true,
-            references: {
-                model: 'whereKnown',
-                key: 'id'
-            },
-            onDelete: 'cascade',
-            onUpdate: 'cascade',
-        },
     }, {
         timestamps: true,
         tableName: 'customer'
     });
+
+    const whereKnown = sequelize.define("whereKnown", {
+        id: {
+            type: Sequelize.INTEGER,
+            autoIncrement: true,
+            primaryKey: true,
+        },
+        name: {
+            type: Sequelize.STRING,
+            notNull: true
+        },
+    }, {
+        timestamps: false,
+        tableName: 'whereKnown'
+    });
+
+
+    whereKnown.hasOne(customer);
+    customer.belongsTo(whereKnown);
+    
+    return {customer, whereKnown};
 };

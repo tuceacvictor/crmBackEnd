@@ -17,15 +17,34 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
-db.user = require("./user.model")(sequelize, Sequelize);
-db.role = require("./role.model")(sequelize, Sequelize);
-db.office = require("./office.model")(sequelize, Sequelize);
+//user
+const userModel = require("./user.model")(sequelize, Sequelize);
+db.user = userModel.user;
+db.role = userModel.role;
+db.office = userModel.office;
+
+
 db.order = require("./order.model")(sequelize, Sequelize);
-db.whereKnown = require("./whereKnown.model")(sequelize, Sequelize);
-db.customer = require("./customer.model")(sequelize, Sequelize);
-db.category = require("./stock/category.model")(sequelize, Sequelize);
-db.stock = require("./stock/stock.model")(sequelize, Sequelize);
+
+//customer
+const customerModel = require("./customer.model")(sequelize, Sequelize);
+db.whereKnown = customerModel.whereKnown;
+db.customer = customerModel.customer;
+
+//stock
+const stockModel = require("./stock/stock.model")(sequelize, Sequelize);
+db.category = stockModel.category;
+db.stock = stockModel.stock;
 db.defectStock = require("./stock/defectStock.model")(sequelize, Sequelize);
+
+//device
+const deviceModel = require("./device/device.model")(sequelize, Sequelize);
+db.device_brand = deviceModel.brand;
+db.device_model = deviceModel.model;
+db.device_type = deviceModel.type;
+db.device = deviceModel.device;
+
+
 utils.initializeApp(db.user, db.role);
 
 module.exports = db;

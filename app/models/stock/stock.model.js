@@ -1,7 +1,7 @@
 
 
 module.exports = (sequelize, Sequelize) => {
-    return sequelize.define('stock', {
+    const stock = sequelize.define('stock', {
         id: {
             type: Sequelize.INTEGER,
             autoIncrement: true,
@@ -9,16 +9,6 @@ module.exports = (sequelize, Sequelize) => {
         },
         name: {
             type: Sequelize.STRING
-        },
-
-        category_id: {
-            type: Sequelize.INTEGER,
-            references: {
-                model: 'category',
-                key: 'id'
-            },
-            onDelete: 'cascade',
-            onUpdate: 'cascade',
         },
         price: {
             type: Sequelize.INTEGER
@@ -39,4 +29,24 @@ module.exports = (sequelize, Sequelize) => {
         timestamps: true,
         tableName: "stock"
     });
+
+
+    const category = sequelize.define('category', {
+        id: {
+            type: Sequelize.INTEGER,
+            autoIncrement: true,
+            primaryKey: true
+        },
+        name: {
+            type: Sequelize.STRING
+        },
+    }, {
+        timestamps: false,
+        tableName: 'stock_category'
+    });
+
+    category.hasOne(stock);
+    stock.belongsTo(category);
+
+    return { stock, category };
 };

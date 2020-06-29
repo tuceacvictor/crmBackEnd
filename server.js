@@ -29,9 +29,17 @@ require("./app/routes/office.routes")(app);
 require("./app/routes/whereKnown.routes")(app);
 require("./app/routes/customer.routes")(app);
 require("./app/routes/order.routes")(app);
+
+//stock
 require("./app/routes/stock/stock.routes")(app);
 require("./app/routes/stock/defectStock.routes")(app);
 require("./app/routes/stock/category.routes")(app);
+
+//device
+require("./app/routes/device/brand.routes")(app);
+require("./app/routes/device/type.routes")(app);
+require("./app/routes/device/model.routes")(app);
+require("./app/routes/device/device.routes")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;

@@ -8,6 +8,7 @@ const config = require("../config/default");
 const validation = require("./validations/user.validation");
 const User = db.user;
 const Office = db.office;
+const role = db.role;
 const Op = db.Sequelize.Op;
 
 const transporter = nodemailer.createTransport({
@@ -26,10 +27,11 @@ exports.login = async (req, res) => {
     let condition = login ? {login: {[Op.like]: `%${login}%`}} : null;
     try {
         const user = await User.findOne({where: condition});
+        const roleObj = await role.findOne({where: {id: {[Op.like]: `%${user.roleId}%`}}})
         if (!user) {
             res.status(400).json({message: "Не верный логин или пароль"});
         }
-        let userOffices = user.office.split(',');
+        let userOffices = []// user.office.split(',');
         let newOffices = await Office.findAll({
             where: {
                 id: userOffices
@@ -44,7 +46,7 @@ exports.login = async (req, res) => {
                     id: user.id,
                     login: user.login,
                     email: user.email,
-                    role: user.role,
+                    role: roleObj.name,
                     office: newOffices,
                     registered: user.createdAt,
                     lastUpdated: user.updatedAt,
@@ -56,13 +58,14 @@ exports.login = async (req, res) => {
             res.status(400).json({message: "Не верный логин или пароль"})
         }
     } catch (e) {
+        console.log(e)
         res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})
     }
 };
 
 // Create and Save a new User
 exports.create = async (req, res) => {
-    const {login, email, office, role} = req.body;
+    const {login, email, officeId, roleId} = req.body;
     const password = generator.generate({
         length: 10,
         numbers: true
@@ -80,13 +83,13 @@ exports.create = async (req, res) => {
         if (validate) {
             const hashedPassword = await bcrypt.hash(password, 8);
             //create user
-            let userOffices = office ? office.map(office => office.id) : [];
+            let userOffices = officeId ? officeId.map(office => office.id) : [];
             const user = {
                 login: login,
                 password: hashedPassword,
                 email: email,
-                role: role,
-                office: userOffices.join(','),
+                roleId: roleId,
+                officeId: userOffices.join(','),
                 defaultOffice: userOffices.join(',')[0]
             };
             //save user
@@ -133,7 +136,11 @@ exports.findAll = async (req, res) => {
     const {page, pageSize, search} = req.query;
     let condition = search ? {login: {[Op.like]: `%${search}%`}} : null;
     try {
-        let allRecords = await User.findAndCountAll({where: condition, ...paginate({page, pageSize})});
+        let allRecords = await User.findAndCountAll({
+            include: [role, Office],
+            where: condition,
+            ...paginate({page, pageSize})
+        });
         res.send({...allRecords, page: parseInt(page), pageSize: parseInt(pageSize)})
     } catch (err) {
         console.log(err);
@@ -147,15 +154,16 @@ exports.findOne = async (req, res) => {
     try {
         let user = await User.findByPk(id);
         let newOffices = [];
-        if (user.office) {
-            let userOffices = user.office.split(',');
+        if (user.officeId) {
+            console.log(user.officeId)
+            let userOffices = user.officeId.split(',');
             newOffices = await Office.findAll({
                 where: {
                     id: userOffices
                 }
             });
         }
-        res.send({...user.dataValues, office: newOffices})
+        res.send({...user.dataValues, officeId: newOffices})
     } catch (err) {
         console.log(err);
         res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})
@@ -188,11 +196,11 @@ exports.changeTheme = async (req, res) => {
 
 // Update a user by the id in the request
 exports.update = async (req, res) => {
-    const {id, login, email, role, office = []} = req.body;
+    const {id, login, email, role, officeId = []} = req.body;
     const condition = id ? {id: {[Op.like]: `%${id}%`}} : null;
     try {
         const user = await User.findOne({where: condition});
-        let userOffices = office ? office.map(office => office.id) : [];
+        let userOffices = officeId ? officeId.map(office => office.id) : [];
         let validate = await validation.userUpdate(req, res);
         if (validate) {
             if (condition && user) {
@@ -200,7 +208,7 @@ exports.update = async (req, res) => {
                     login,
                     email,
                     role,
-                    office: userOffices.join(',')
+                    officeId: userOffices.join(',')
                 });
                 res.send({message: 'Success'})
             } else {

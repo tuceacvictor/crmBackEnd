@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 
 exports.initializeApp = async (User, Role) => {
     try {
-        if(User && Role){
+        if (User && Role) {
             const users = await User.findAll();
             const roles = await Role.findAll();
             //check for users
@@ -13,8 +13,8 @@ exports.initializeApp = async (User, Role) => {
                     login: 'admin',
                     password: hashedPassword,
                     email: 'tuceak16@gmail.com',
-                    role: 'admin',
-                    office: 'all'
+                    roleId: '1',
+                    //   officeId: '0'
                 };
                 User.create(user);
             }
@@ -22,10 +22,14 @@ exports.initializeApp = async (User, Role) => {
 
             //check for roles
             if (roles.length === 0) {
-                const role = {
-                    name: 'admin'
-                };
-                Role.create(role)
+                const role = [
+                    {name: 'admin'},
+                    {name: 'manager'}
+                ];
+                role.forEach(r => {
+                    Role.create(r)
+                })
+
             }
         }
 
