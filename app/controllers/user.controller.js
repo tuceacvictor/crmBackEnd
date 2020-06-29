@@ -150,14 +150,14 @@ exports.findAll = async (req, res) => {
 };
 
 // Find a single User with an id
-exports.findOne = async (req, res) => {
+exports.read = async (req, res) => {
     const {id} = req.body;
     try {
         let user = await User.findByPk(id);
         let newOffices = [];
         if (user.officeId) {
             console.log(user.officeId)
-            let userOffices = user.officeId.split(',');
+            let userOffices = `${user.officeId}`.split(',');
             newOffices = await Office.findAll({
                 where: {
                     id: userOffices
