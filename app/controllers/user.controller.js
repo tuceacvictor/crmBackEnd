@@ -131,6 +131,7 @@ exports.changePassword = async (req, res) => {
     }
 };
 
+
 // Retrieve all Users from the database.
 exports.findAll = async (req, res) => {
     const {page, pageSize, search} = req.query;
