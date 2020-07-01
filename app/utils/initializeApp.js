@@ -5,19 +5,6 @@ exports.initializeApp = async (User, Role) => {
         if (User && Role) {
             const users = await User.findAll();
             const roles = await Role.findAll();
-            //check for users
-            if (users.length === 0) {
-                //create admin
-                const hashedPassword = await bcrypt.hash('admin', 8);
-                const user = {
-                    login: 'admin',
-                    password: hashedPassword,
-                    email: 'tuceak16@gmail.com',
-                    roleId: '1',
-                    //   officeId: '0'
-                };
-                User.create(user);
-            }
 
 
             //check for roles
@@ -26,12 +13,27 @@ exports.initializeApp = async (User, Role) => {
                     {name: 'admin'},
                     {name: 'manager'}
                 ];
-                role.forEach(r => {
-                    Role.create(r)
-                })
+                for (const r of role) {
+                    await Role.create(r)
+                }
+            }
 
+
+            //check for users
+            if (users.length === 0) {
+                //create admin
+                const hashedPassword = await bcrypt.hash('admin', 8);
+                const user = {
+                    login: 'admin',
+                    password: hashedPassword,
+                    email: 'tuceak16@gmail.com',
+                    roleId: 1,
+                    //   officeId: '0'
+                };
+                await User.create(user);
             }
         }
+
 
     } catch (e) {
         console.log('INIT ERROR', e)

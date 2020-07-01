@@ -20,23 +20,16 @@ const transporter = nodemailer.createTransport({
 });
 
 
-
 //login user
 exports.login = async (req, res) => {
     const {login, password} = req.body;
     let condition = login ? {login: {[Op.like]: `%${login}%`}} : null;
     try {
-        const user = await User.findOne({where: condition});
-        const roleObj = await role.findOne({where: {id: {[Op.like]: `%${user.roleId}%`}}})
+        const user = await User.findOne({where: condition, include: [{model: Office, as: 'offices'}]});
+        const roleObj = await role.findOne({where: {id: {[Op.like]: `%${user.roleId}%`}}});
         if (!user) {
             res.status(400).json({message: "Не верный логин или пароль"});
         }
-        let userOffices = []// user.office.split(',');
-        let newOffices = await Office.findAll({
-            where: {
-                id: userOffices
-            }
-        });
         const isMatchPasswords = await bcrypt.compare(password, user.password);
         if (isMatchPasswords === true) {
             const token = jwt.sign({userId: user.id}, config.jwtSecret, {expiresIn: '1h'});
@@ -47,7 +40,7 @@ exports.login = async (req, res) => {
                     login: user.login,
                     email: user.email,
                     role: roleObj.name,
-                    office: newOffices,
+                    offices: user.offices,
                     registered: user.createdAt,
                     lastUpdated: user.updatedAt,
                     defaultOffice: user.defaultOffice
@@ -58,14 +51,14 @@ exports.login = async (req, res) => {
             res.status(400).json({message: "Не верный логин или пароль"})
         }
     } catch (e) {
-        console.log(e)
+        console.log(e);
         res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})
     }
 };
 
 // Create and Save a new User
 exports.create = async (req, res) => {
-    const {login, email, officeId, roleId} = req.body;
+    const {login, email, offices, roleId} = req.body;
     const password = generator.generate({
         length: 10,
         numbers: true
@@ -83,18 +76,20 @@ exports.create = async (req, res) => {
         if (validate) {
             const hashedPassword = await bcrypt.hash(password, 8);
             //create user
-            let userOffices = officeId ? officeId.map(office => office.id) : [];
             const user = {
                 login: login,
                 password: hashedPassword,
                 email: email,
                 roleId: roleId,
-                officeId: userOffices.join(','),
-                defaultOffice: userOffices.join(',')[0]
+                defaultOffice: offices[0].id
             };
             //save user
-            await User.create(user);
-            transporter.sendMail(mailOptions, function(error, info){
+            await User.create(user).then(async (user) => {
+                await user.addOffice(offices.map(o => {
+                    return o.id
+                }));
+            });
+            transporter.sendMail(mailOptions, function (error, info) {
                 if (error) {
                     console.log(error);
                 } else {
@@ -138,7 +133,7 @@ exports.findAll = async (req, res) => {
     let condition = search ? {login: {[Op.like]: `%${search}%`}} : null;
     try {
         let allRecords = await User.findAndCountAll({
-            include: [role, Office],
+            include: [role, {model: Office, as: 'offices'}],
             where: condition,
             ...paginate({page, pageSize})
         });
@@ -153,17 +148,8 @@ exports.findAll = async (req, res) => {
 exports.read = async (req, res) => {
     const {id} = req.body;
     try {
-        let user = await User.findByPk(id);
-        let newOffices = [];
-        if (user.officeId) {
-            let userOffices = `${user.officeId}`.split(',');
-            newOffices = await Office.findAll({
-                where: {
-                    id: userOffices
-                }
-            });
-        }
-        res.send({...user.dataValues, officeId: newOffices})
+        let user = await User.findByPk(id, {include: [{model: Office, as: 'offices'}]});
+        res.send(user)
     } catch (err) {
         console.log(err);
         res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})
@@ -196,20 +182,21 @@ exports.changeTheme = async (req, res) => {
 
 // Update a user by the id in the request
 exports.update = async (req, res) => {
-    const {id, login, email, role, officeId = []} = req.body;
+    const {id, login, email, role, offices = []} = req.body;
     const condition = id ? {id: {[Op.like]: `%${id}%`}} : null;
     try {
         const user = await User.findOne({where: condition});
-        let userOffices = officeId ? officeId.map(office => office.id) : [];
         let validate = await validation.userUpdate(req, res);
         if (validate) {
             if (condition && user) {
-                user.update({
+                await user.update({
                     login,
                     email,
                     role,
-                    officeId: userOffices.join(',')
                 });
+                user.setOffices(offices.map(o => {
+                    return o.id
+                }));
                 res.send({message: 'Success'})
             } else {
                 res.status(400).json({message: "Такой пользователь не найден"})
