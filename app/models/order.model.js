@@ -1,5 +1,8 @@
 module.exports = (sequelize, Sequelize) => {
-    return sequelize.define("Order", {
+    const {executor, user, Device, customer} = sequelize.models;
+    console.log(sequelize);
+
+    const order = sequelize.define("Order", {
             id: {
                 type: Sequelize.INTEGER,
                 primaryKey: true
@@ -8,6 +11,12 @@ module.exports = (sequelize, Sequelize) => {
                 type: Sequelize.INTEGER
             },
             device_id: {
+                type: Sequelize.INTEGER
+            },
+            manager_id: {
+                type: Sequelize.INTEGER
+            },
+            executor_id: {
                 type: Sequelize.INTEGER
             },
             password: {
@@ -34,14 +43,8 @@ module.exports = (sequelize, Sequelize) => {
             prepayment: {
                 type: Sequelize.INTEGER,
             },
-            manager_id: {
-                type: Sequelize.INTEGER
-            },
             urgently: {
                 type: Sequelize.BOOLEAN
-            },
-            executor: {
-                type: Sequelize.INTEGER
             },
             status: {
                 type: Sequelize.STRING,
@@ -52,4 +55,12 @@ module.exports = (sequelize, Sequelize) => {
             timestamps: true,
             tableName: 'order'
         });
+
+    //executor.hasOne(order);
+    //order.belongsTo(executor);
+
+    //client.hasOne(order);
+    //order.belongsTo(client);
+
+    return order;
 };

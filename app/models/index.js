@@ -23,9 +23,6 @@ db.user = userModel.user;
 db.role = userModel.role;
 db.office = userModel.office;
 
-
-db.order = require("./order.model")(sequelize, Sequelize);
-
 //customer
 const customerModel = require("./customer.model")(sequelize, Sequelize);
 db.whereKnown = customerModel.whereKnown;
@@ -44,6 +41,12 @@ db.device_model = deviceModel.model;
 db.device_type = deviceModel.type;
 db.device = deviceModel.device;
 
+//executor
+const executorModel = require("./executor.model")(sequelize, Sequelize);
+db.executor = executorModel;
+
+//order
+db.order = require("./order.model")(sequelize, Sequelize);
 
 utils.initializeApp(db.user, db.role);
 
