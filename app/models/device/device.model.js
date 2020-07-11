@@ -11,15 +11,6 @@ module.exports = (sequelize, Sequelize) => {
         serial: {
             type: Sequelize.STRING
         },
-        equipment: {
-            type: Sequelize.STRING
-        },
-        appearance: {
-            type: Sequelize.STRING
-        },
-        password: {
-            type: Sequelize.STRING
-        },
     }, {
         timestamps: true,
         tableName: 'device'

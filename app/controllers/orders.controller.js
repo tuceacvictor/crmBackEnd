@@ -14,64 +14,63 @@ const customer = db.customer;
 
 exports.createOrder = async (req, res) => {
     const {
-        customer: {id: customerId, phone, name, whereKnown, __isNew: isNewCustomer},
-        device: {id: deviceId, serial, brand, model, type, password, equipment, appearance, problem, __isNew: isNewDevice},
-        otherInformation: {note, ready_date, urgently, status = 'opened', executorId, managerId}
+        customer: {phone, name, whereKnownId, __isNew: isNewCustomer},
+        device: {serial, brand, model, type, password, equipment, appearance, problem, __isNew: isNewDevice},
+        otherInformation: {note, ready_date, urgently, status = 'opened', executorId, managerId, estimated_price, prepayment}
     } = req.body;
-
-    //client
-    //check if client does not exists
-    const findCustomer = await customer.findOne({where: {phone: {[Op.like]: `%${phone}%`}}});
-    if (!findCustomer) {
-        const newCustomer = {
-            phone,
-            name,
-            whereKnown
-        };
-        try {
-            await customer.create(newCustomer)
-        } catch (e) {
-            res.status(500).json({message: "Create new customer error"})
-        }
-    }
-    //device
-    const findDevice = await device.findOne({where: {serial: {[Op.like]: `%${serial}%`}}});
-    if (!findDevice) {
-        const newDevice = {
-            serial,
-            brandId: brand.id,
-            modelId: model.id,
-            typeId: type.id,
-        };
-        try {
-            await device.create(newDevice)
-        } catch (e) {
-            res.status(500).json({message: "Create new device error"})
-        }
-    }
-
-    //order create
-    const newOrder = {
-        customerId: findCustomer.id,
-        deviceId: findDevice.id,
-        executorId,
-        userId: managerId,
-        password,
-        equipment,
-        appearance,
-        problem,
-        note,
-        ready_date,
-        urgently,
-        status
-    };
     try {
+        //client
+        //check if client does not exists
+        let findCustomer = await customer.findOne({where: {phone: {[Op.like]: `%${phone}%`}}});
+        if (!findCustomer) {
+            const newCustomer = {
+                phone,
+                name,
+                whereKnownId: whereKnownId.id
+            };
+            findCustomer = await customer.create(newCustomer);
+        }
+        //device
+        //check for device
+        let findDevice = await device.findOne({where: {serial: {[Op.like]: `%${serial}%`}}});
+        if (!findDevice) {
+            const newDevice = {
+                serial,
+                brandId: brand.id,
+                modelId: model.id,
+                typeId: type.id,
+            };
+            findDevice = await device.create(newDevice);
+        }
+
+        //order create
+        const newOrder = {
+            customerId: findCustomer.id,
+            deviceId: findDevice.id,
+            executorId,
+            userId: managerId,
+            password,
+            equipment,
+            appearance,
+            problem,
+            note,
+            ready_date,
+            urgently,
+            status,
+            estimated_price,
+            prepayment
+        };
         await order.create(newOrder);
-        res.send({message: 'Success'})
+        res.send({message: 'Заказ успешно создан'})
     } catch (err) {
         console.log(err);
-        res.status(500).json({message: JSON.stringify(err)})
+        res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})
     }
+};
+
+
+exports.findAll = async (req, res) => {
+
 };
 
 
