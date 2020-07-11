@@ -1,23 +1,10 @@
-module.exports = (sequelize, Sequelize) => {
-    const {executor, user, Device, customer} = sequelize.models;
-    console.log(sequelize);
-
+module.exports = (sequelize, Sequelize, db) => {
+    const {executor, user, device, customer} = db;
     const order = sequelize.define("Order", {
             id: {
                 type: Sequelize.INTEGER,
-                primaryKey: true
-            },
-            client_id: {
-                type: Sequelize.INTEGER
-            },
-            device_id: {
-                type: Sequelize.INTEGER
-            },
-            manager_id: {
-                type: Sequelize.INTEGER
-            },
-            executor_id: {
-                type: Sequelize.INTEGER
+                primaryKey: true,
+                autoIncrement: true,
             },
             password: {
                 type: Sequelize.STRING
@@ -56,11 +43,17 @@ module.exports = (sequelize, Sequelize) => {
             tableName: 'order'
         });
 
-    //executor.hasOne(order);
-    //order.belongsTo(executor);
+    executor.hasOne(order);
+    order.belongsTo(executor);
 
-    //client.hasOne(order);
-    //order.belongsTo(client);
+    customer.hasOne(order);
+    order.belongsTo(customer);
+
+    device.hasOne(order);
+    order.belongsTo(device);
+
+    user.hasOne(order);
+    order.belongsTo(user);
 
     return order;
 };

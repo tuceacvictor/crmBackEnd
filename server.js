@@ -28,7 +28,6 @@ require("./app/routes/role.routes")(app);
 require("./app/routes/office.routes")(app);
 require("./app/routes/whereKnown.routes")(app);
 require("./app/routes/customer.routes")(app);
-require("./app/routes/order.routes")(app);
 
 //stock
 require("./app/routes/stock/stock.routes")(app);
@@ -43,6 +42,9 @@ require("./app/routes/device/device.routes")(app);
 
 //executor
 require("./app/routes/executor.routes")(app);
+
+//order
+require("./app/routes/order.routes")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;

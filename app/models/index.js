@@ -46,7 +46,7 @@ const executorModel = require("./executor.model")(sequelize, Sequelize);
 db.executor = executorModel;
 
 //order
-db.order = require("./order.model")(sequelize, Sequelize);
+db.order = require("./order.model")(sequelize, Sequelize, db);
 
 utils.initializeApp(db.user, db.role);
 

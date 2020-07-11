@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-    return sequelize.define('Executor', {
+    return sequelize.define('executor', {
         id: {
             type: Sequelize.INTEGER,
             autoIncrement: true,
