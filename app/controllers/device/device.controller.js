@@ -110,7 +110,7 @@ exports.getAll = async (req, res) => {
     try {
         let allRecords = await Device.findAndCountAll({
                 include: [model, type, brand],
-                where: condition,
+                //where: condition,
                 ...paginate({page, pageSize})
             }
         );

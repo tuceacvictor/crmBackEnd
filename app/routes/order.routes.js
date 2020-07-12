@@ -4,7 +4,7 @@ const orders = require("../controllers/orders.controller.js");
 
 module.exports = (app) => {
     //get all orders
-    router.get("/", auth, orders.getOrders);
+    router.get("/", auth, orders.findAll);
 
 
     //create order

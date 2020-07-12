@@ -70,7 +70,20 @@ exports.createOrder = async (req, res) => {
 
 
 exports.findAll = async (req, res) => {
-
+    const {page, pageSize, search} = req.query;
+    let condition = search !== 'undefined' ? {name: {[Op.like]: `%${search}%`}} : null;
+    try {
+        let allRecords = await order.findAndCountAll({
+                include: [user, {model: device, include: [model, type, brand]}, customer],
+                //where: condition,
+                ...paginate({page, pageSize})
+            }
+        );
+        res.send({...allRecords, page: parseInt(page), pageSize: parseInt(pageSize)})
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({message: err})
+    }
 };
 
 
