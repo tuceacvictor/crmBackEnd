@@ -35,7 +35,8 @@ module.exports = (sequelize, Sequelize, db) => {
             },
             status: {
                 type: Sequelize.STRING,
-                isIn: ['opened', 'closed']
+                isIn: ['new', 'inProgress', 'inRemote', 'done', 'payed', 'refuse'],
+
             }
         },
         {

@@ -1,4 +1,5 @@
-const {paginate} = require('./utils/paginate')
+const {paginate} = require('./utils/paginate');
+const logger = require('../utils/logger');
 const db = require("../models");
 const Op = db.Sequelize.Op;
 const sequelize = require("sequelize");
@@ -10,7 +11,7 @@ const model = db.device_model;
 const type = db.device_type;
 const whereKnown = db.whereKnown;
 const customer = db.customer;
-
+const executor = db.executor;
 
 exports.createOrder = async (req, res) => {
     const {
@@ -64,7 +65,38 @@ exports.createOrder = async (req, res) => {
         res.send({message: 'Заказ успешно создан'})
     } catch (err) {
         console.log(err);
+        logger.error(`get all orders: ${err}`);
         res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})
+    }
+};
+
+exports.changeStatus = async (req, res) => {
+  const {id, status} = req.body;
+  const condition = id ? {id: {[Op.like]: `%${id}%`}} : null;
+  try {
+      const record = await order.findOne({where: condition});
+      record.update({
+          status
+      });
+      res.send({message: 'Статус успешно изменен'})
+  }catch (e) {
+      logger.error(`Change order status: ${e}`);
+      res.status(500).json({message: e.message || 'Что-то пошло не так, попробуйте снова'})
+  }
+};
+
+exports.read = async (req, res) => {
+    const {id} = req.body;
+    const condition = id ? {id: {[Op.like]: `%${id}%`}} : null;
+    try {
+        const record = await order.findOne({
+            where: condition,
+            include: [customer, user, device, executor]
+        });
+        res.send(record)
+    } catch (e) {
+        logger.error(`read order: ${e}`);
+        res.status(500).json({message: e.message || 'Что-то пошло не так, попробуйте снова'})
     }
 };
 
