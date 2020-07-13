@@ -4,6 +4,7 @@ const cors = require("cors");
 const app = express();
 const env = process.env.NODE_ENV || "development";
 const db = require("./app/models");
+const logger = require("./app/utils/logger");
 
 let corsOptions = {
     origin: env === 'development' ? "http://localhost:3000" : "https://apple4you.tu4ka.tech"
@@ -49,5 +50,6 @@ require("./app/routes/order.routes")(app);
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
+    logger.info(`Server is running on port: ${PORT}.`);
     console.log(`Server is running on port ${PORT}.`);
 });

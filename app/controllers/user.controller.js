@@ -10,7 +10,7 @@ const User = db.user;
 const Office = db.office;
 const role = db.role;
 const Op = db.Sequelize.Op;
-
+const logger = require('../utils/logger');
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -51,7 +51,7 @@ exports.login = async (req, res) => {
             res.status(400).json({message: "Не верный логин или пароль"})
         }
     } catch (e) {
-        console.log(e);
+        logger.error(e);
         res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})
     }
 };
@@ -99,7 +99,7 @@ exports.create = async (req, res) => {
             res.send({message: 'Пользователь создан'})
         }
     } catch (err) {
-        console.log(err);
+        logger.error(err);
         res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})
     }
 };
@@ -139,7 +139,7 @@ exports.findAll = async (req, res) => {
         });
         res.send({...allRecords, page: parseInt(page), pageSize: parseInt(pageSize)})
     } catch (err) {
-        console.log(err);
+        logger.error(err);
         res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})
     }
 };
@@ -151,7 +151,7 @@ exports.read = async (req, res) => {
         let user = await User.findByPk(id, {include: [{model: Office, as: 'offices'}]});
         res.send(user)
     } catch (err) {
-        console.log(err);
+        logger.error(err);
         res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})
     }
 };
@@ -175,7 +175,7 @@ exports.changeTheme = async (req, res) => {
             });
         }
     } catch (err) {
-        console.log(err);
+        logger.error(err);
         res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})
     }
 };
@@ -203,7 +203,7 @@ exports.update = async (req, res) => {
             }
         }
     } catch (err) {
-        console.log(err);
+        logger.error(err);
         res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})
     }
 };
@@ -217,7 +217,7 @@ exports.delete = async (req, res) => {
         });
         res.send({message: 'Success'})
     } catch (err) {
-        console.log(err);
+        logger.error(err);
         res.status(500).json({message: 'Что-то пошло не так, попробуйте снова'})
     }
 };

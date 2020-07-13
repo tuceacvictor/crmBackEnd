@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs');
-
+const logger = require('./logger');
 exports.initializeApp = async (User, Role) => {
     try {
         if (User && Role) {
@@ -36,6 +36,7 @@ exports.initializeApp = async (User, Role) => {
 
 
     } catch (e) {
+        logger.error(`INIT APP ERR: ${e}`);
         console.log('INIT ERROR', e)
     }
 };

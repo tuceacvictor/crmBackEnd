@@ -1,0 +1,19 @@
+2020-07-13 14:30:41.018, MSG: Server is running on port: 8080.
+2020-07-13 14:45:58.181, MSG: Server is running on port: 8080.
+2020-07-13 14:47:25.654, MSG: Server is running on port: 8080.
+2020-07-13 14:49:44.221, MSG: Server is running on port: 8080.
+2020-07-13 14:50:25.545, MSG: Server is running on port: 8080.
+2020-07-13 15:41:54.118, MSG: Server is running on port: 8080.
+2020-07-13 15:41:55.166, ERR: connect ECONNREFUSED 127.0.0.1:3306
+2020-07-13 15:41:59.286, MSG: Server is running on port: 8080.
+2020-07-13 15:42:00.323, ERR: connect ECONNREFUSED 127.0.0.1:3306
+2020-07-13 15:42:22.114, MSG: Server is running on port: 8080.
+2020-07-13 15:42:23.147, ERR: connect ECONNREFUSED 127.0.0.1:3306
+2020-07-13 15:42:27.890, MSG: Server is running on port: 8080.
+2020-07-13 15:42:28.929, ERR: connect ECONNREFUSED 127.0.0.1:3306
+2020-07-13 15:43:08.448, MSG: Server is running on port: 8080.
+2020-07-13 15:43:09.477, ERR: INIT APP ERR: SequelizeConnectionRefusedError: connect ECONNREFUSED 127.0.0.1:3306
+2020-07-13 15:43:25.457, MSG: Server is running on port: 8080.
+2020-07-13 15:43:26.486, ERR: INIT APP ERR: SequelizeConnectionRefusedError: connect ECONNREFUSED 127.0.0.1:3306
+2020-07-13 15:43:29.296, MSG: Server is running on port: 8080.
+2020-07-13 15:43:30.326, ERR: INIT APP ERR: SequelizeConnectionRefusedError: connect ECONNREFUSED 127.0.0.1:3306
