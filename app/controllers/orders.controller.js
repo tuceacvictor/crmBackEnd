@@ -91,7 +91,7 @@ exports.read = async (req, res) => {
     try {
         const record = await order.findOne({
             where: condition,
-            include: [customer, user, device, executor]
+            include: [customer, user, {model: device, include: [model, type, brand]}, executor]
         });
         res.send(record)
     } catch (e) {
